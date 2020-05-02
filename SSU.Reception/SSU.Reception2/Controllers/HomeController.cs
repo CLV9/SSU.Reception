@@ -14,15 +14,15 @@ namespace SSU.Reception.Controllers
         private DirectionContext directionDb = new DirectionContext();
         private readonly int pageSize = 15;
 
-        public ActionResult Index(bool? originalCertificate, string search = "", bool activeOnly = false, int pageNum = 0)
+        public ActionResult Index(bool originalCertificateOnly = false, string search = "", bool activeOnly = true, int page = 0)
         {
-            ViewData["PageNum"] = pageNum;
-            ViewData["ItemsCount"] = enrolleeDb.Enrolles.Count();
-            ViewData["PageSize"] = pageSize;
+            ViewData["page"] = page;
+            ViewData["items_count"] = enrolleeDb.Enrolles.Count();
+            ViewData["size"] = pageSize;
 
-            ViewData["OriginalCertificate"] = originalCertificate;
-            ViewData["Search"] = search;
-            ViewData["ActiveOnly"] = activeOnly;
+            ViewData["originalCertificateOnly"] = originalCertificateOnly;
+            ViewData["search"] = search;
+            ViewData["activeOnly"] = activeOnly;
 
             var all = enrolleeDb.Enrolles
                 .Include(x => x.FirstPriority)
@@ -34,9 +34,7 @@ namespace SSU.Reception.Controllers
             var filtred = from x in all
                           where x.Surname.Contains(search) ||
                                 x.Name.Contains(search) ||
-                                x.Patronymic.Contains(search) ||
-                                x.ExamYear.ToString().Contains(search) ||
-                                x.PersonalPhone.Contains(search)
+                                x.Patronymic.Contains(search)
                           select x;
 
             if (activeOnly)
@@ -44,15 +42,15 @@ namespace SSU.Reception.Controllers
                 filtred = filtred.Where(x => x.ActivityStatus == true);
             }
 
-            if (originalCertificate != null)
+            if (originalCertificateOnly)
             {
-                filtred = filtred.Where(x => x.OriginalCertificate == originalCertificate);
+                filtred = filtred.Where(x => x.OriginalCertificate == originalCertificateOnly);
             }
 
             //Создание RatingViewModel
             var ratingViewModel = new RatingViewModel
             {
-                Enrollees = filtred.Skip(pageSize * pageNum).Take(pageSize),
+                Enrollees = filtred.Skip(pageSize * page).Take(pageSize),
                 SortedDirections = new Dictionary<Direction, IList<Enrollee>>()
             };
 
@@ -63,6 +61,7 @@ namespace SSU.Reception.Controllers
                              || x.SecondPriority.Name == direction.Name
                              || x.ThirdPriority.Name == direction.Name)
                     .OrderByDescending(TotalEnrolleePoints)
+                    .OrderByDescending(x => (int)x.ReceiptStatus)
                     .ToList();
 
                 ratingViewModel.SortedDirections.Add(direction, enrolles);
@@ -74,23 +73,11 @@ namespace SSU.Reception.Controllers
         private int TotalEnrolleePoints(Enrollee enrollee)
         {
             var score = enrollee.MathScore + enrollee.RussianScore;
+
             if (enrollee.CSScore != null)
                 score += enrollee.CSScore.Value;
+
             return score;
         }
-
-        public ActionResult About()
-		{
-			ViewBag.Message = "Your application description page.";
-
-			return View();
-		}
-
-		public ActionResult Contact()
-		{
-			ViewBag.Message = "Your contact page.";
-
-			return View();
-		}
 	}
 }

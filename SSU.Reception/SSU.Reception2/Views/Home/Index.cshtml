@@ -5,25 +5,34 @@
 }
 
 <div class="panel panel-info">
+
     <div class="panel-heading">
-        Список абитуриентов на @DateTime.Now
+        Общий рейтинг абитуриентов на @DateTime.Now
     </div>
+
     <div class="panel-body">
-        <form method="get">
-            <div class="form-inline" style="justify-content: space-between; display: flex">
-                <input id="contact-filter" style="display: inline-flex" class="form-control" type="text" placeholder="Поиск..">
-                <div class="form-group">
-                    <input class="form-check-input" type="checkbox" id="checkbox-filter" value="option1">
-                    <label class="form-check-label" for="checkbox-filter">Не показывать неактивных абитуриентов</label>
-                </div>
-                <div class="form-group">
-                    <input class="form-check-input" type="checkbox" id="checkbox-filter-certificate" value="option1">
-                    <label class="form-check-label" for="checkbox-filter">Оригинал аттестата</label>
-                </div>
-                <input type="submit" value="Применить" class="btn btn-success" />
+        @using (Html.BeginForm("Index", "Home", new { page = ViewData["page"] }, FormMethod.Get, new { @class = "form-inline", @style = "justify-content: space-between; display: flex" }))
+        {
+            <!-- Строка поиска -->
+            @Html.Editor("search", (string)ViewData["search"], new { htmlAttributes = new { @class = "form-control", @style = "display: inline-flex", @placeholder = "Поиск по ФИО.." } })
+
+            <!-- Чекбокс "Только активные абитуриенты" -->
+            <div>
+                @Html.CheckBox("activeOnly", (bool)ViewData["activeOnly"], new { @class = "form-check-input", @id = "checkbox-activity" })
+                <label class="form-check-label" for="checkbox-activity">Только активные абитуриенты</label>
             </div>
-        </form>
+
+            <!-- Чекбокс "Только оригинал аттестата" -->
+            <div>
+                @Html.CheckBox("originalCertificateOnly", (bool)ViewData["originalCertificateOnly"], new { @class = "form-check-input", @id = "checkbox-certificate" })
+                <label class="form-check-label" for="checkbox-certificate">Только оригинал аттестата</label>
+            </div>
+
+            <!-- Кнопка "применить" -->
+            <input type="submit" value="Применить" class="btn btn-success" />
+        }
     </div>
+
 </div>
 
 <div class="table-responsive">
@@ -67,100 +76,100 @@
         }
         @foreach (var item in Model.Enrollees)
         {
-    <tr>
-        <td>@i</td>
-        @{
-            i++;
-        }
-        <!-- Общий список направлений и позиция на этом направлении в общем списке -->
-        @{
-            foreach (var direction in Model.SortedDirections)
-            {
-                var index = direction.Value.IndexOf(item) + 1;
-                if (index != 0)
-                {
-                    <td>@index</td>
+            <tr>
+                <td>@i</td>
+                @{
+                    i++;
                 }
-                else
-                {
-                    <td></td>
+                <!-- Общий список направлений и позиция на этом направлении в общем списке -->
+                @{
+                    foreach (var direction in Model.SortedDirections)
+                    {
+                        var index = direction.Value.IndexOf(item) + 1;
+                        if (index != 0)
+                        {
+                            <td>@index</td>
+                        }
+                        else
+                        {
+                            <td></td>
+                        }
+                    }
                 }
-            }
-        }
-        <!-- Статус в приказе после 29 июля и 1 августа -->
-        <td>
-            @Html.DisplayFor(modelItem => item.EnrollmentStatus)
-        </td>
-        <!-- ФИО -->
-        <td>
-            @Html.DisplayFor(modelItem => item.Surname)
-            @Html.DisplayFor(modelItem => item.Name)
-            @Html.DisplayFor(modelItem => item.Patronymic)
-        </td>
-        <!-- Статус поступления -->
-        <td>
-            @Html.DisplayFor(modelItem => item.GetReceiptStatus)
-        </td>
-        <!-- Направление, на котором лежит оригинал -->
-        <td>
-            @Html.DisplayFor(modelItem => item.FirstPriority.Name)
-        </td>
-        <!-- 1-й приоритет -->
-        <td>
-            @Html.DisplayFor(modelItem => item.FirstPriority.Name)
-        </td>
-        <!-- 2-й приоритет -->
-        <td>
-            @Html.DisplayFor(modelItem => item.SecondPriority.Name)
-        </td>
-        <!-- 3-й приоритет -->
-        <td>
-            @Html.DisplayFor(modelItem => item.ThirdPriority.Name)
-        </td>
-        <!-- Общая сумма баллов -->
-        <td>
-            @Html.DisplayFor(modelItem => item.TotalPoints)
-        </td>
-        <!-- Баллы ЕГЭ -->
-        <td>
-            @Html.DisplayFor(modelItem => item.CSScore)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.MathScore)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.RussianScore)
-        </td>
-        <!-- Баллы за медаль -->
-        <td>
-            @Html.DisplayFor(modelItem => item.HasMedal)
-        </td>
-        <!-- Доп. баллы -->
-        <td>
-            @Html.DisplayFor(modelItem => item.ExtraPoints)
-        </td>
-        <!-- Статус оригинала -->
-        <td>
-            @Html.DisplayFor(modelItem => item.OriginalCertificate)
-        </td>
+                <!-- Статус в приказе после 29 июля и 1 августа -->
+                <td>
+                    @Html.DisplayFor(modelItem => item.EnrollmentStatus)
+                </td>
+                <!-- ФИО -->
+                <td>
+                    @Html.DisplayFor(modelItem => item.Surname)
+                    @Html.DisplayFor(modelItem => item.Name)
+                    @Html.DisplayFor(modelItem => item.Patronymic)
+                </td>
+                <!-- Статус поступления -->
+                <td>
+                    @Html.DisplayFor(modelItem => item.GetReceiptStatus)
+                </td>
+                <!-- Направление, на котором лежит оригинал -->
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstPriority.Name)
+                </td>
+                <!-- 1-й приоритет -->
+                <td>
+                    @Html.DisplayFor(modelItem => item.FirstPriority.Name)
+                </td>
+                <!-- 2-й приоритет -->
+                <td>
+                    @Html.DisplayFor(modelItem => item.SecondPriority.Name)
+                </td>
+                <!-- 3-й приоритет -->
+                <td>
+                    @Html.DisplayFor(modelItem => item.ThirdPriority.Name)
+                </td>
+                <!-- Общая сумма баллов -->
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalPoints)
+                </td>
+                <!-- Баллы ЕГЭ -->
+                <td>
+                    @Html.DisplayFor(modelItem => item.CSScore)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.MathScore)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RussianScore)
+                </td>
+                <!-- Баллы за медаль -->
+                <td>
+                    @Html.DisplayFor(modelItem => item.HasMedal)
+                </td>
+                <!-- Доп. баллы -->
+                <td>
+                    @Html.DisplayFor(modelItem => item.ExtraPoints)
+                </td>
+                <!-- Статус оригинала -->
+                <td>
+                    @Html.DisplayFor(modelItem => item.OriginalCertificate)
+                </td>
 
-        <!-- Статус зачисления в другом вузе -->
-        @*<td></td>*@
+                <!-- Статус зачисления в другом вузе -->
+                @*<td></td>*@
 
-        <!-- Изменить -->
-        <td>
-            @Html.ActionLink("Изменить", "Edit", "Enrollees", new { id = item.Id }, null)
-        </td>
-        <!-- Удалить -->
-        <td>
-            @Html.ActionLink("Удалить", "Delete", "Enrollees", new { id = item.Id }, null)
-        </td>
-    </tr>
+                <!-- Изменить -->
+                <td>
+                    @Html.ActionLink("Изменить", "Edit", "Enrollees", new { id = item.Id }, null)
+                </td>
+                <!-- Удалить -->
+                <td>
+                    @Html.ActionLink("Удалить", "Delete", "Enrollees", new { id = item.Id }, null)
+                </td>
+            </tr>
         }
     </table>
 </div>
 
 <div style="justify-content: center; width: 100%; margin:15px 15px 2px 4px;">
-    @SSU.Reception.Helpers.HtmlHelperExtension.PagingPrev(Html, (int)ViewData["PageNum"])
-    @SSU.Reception.Helpers.HtmlHelperExtension.PagingNext(Html, (int)ViewData["PageNum"], (int)ViewData["ItemsCount"], (int)ViewData["PageSize"])
+    @SSU.Reception.Helpers.HtmlHelperExtension.PagingPrev(Html, (int)ViewData["page"])
+    @SSU.Reception.Helpers.HtmlHelperExtension.PagingNext(Html, (int)ViewData["page"], (int)ViewData["items_count"], (int)ViewData["size"])
 </div>

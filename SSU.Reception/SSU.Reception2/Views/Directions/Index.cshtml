@@ -31,7 +31,8 @@
 			</td>
 			<td>
 				@Html.ActionLink("Изменить", "Edit", new { id = item.Id }) |
-				@Html.ActionLink("Удалить", "Delete", new { id = item.Id })
+				@Html.ActionLink("Удалить", "Delete", new { id = item.Id }) |
+				@Html.ActionLink("Точный список", "Rating", new { id = item.Id})
 			</td>
 		</tr>
 	}

@@ -169,12 +169,12 @@ namespace SSU.Reception.Models
 	public enum ReceiptStatus
 	{
 		[Display(Name = "БВИ")]
-		NoEntranceExams = 1,
+		NoEntranceExams = 4,
 		[Display(Name = "Льгота")]
-		Privilege = 2,
+		Privilege = 3,
 		[Display(Name = "Целевое")]
-		Target = 3,
+		Target = 2,
 		[Display(Name = "ОК")]
-		GeneralCompetition = 4
+		GeneralCompetition = 1
 	}
 }

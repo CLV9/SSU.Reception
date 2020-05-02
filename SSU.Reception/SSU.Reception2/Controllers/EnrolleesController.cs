@@ -17,11 +17,15 @@ namespace SSU.Reception.Controllers
         private readonly int pageSize = 15;
 
         // GET: Enrollees
-        public async Task<ActionResult> Index(string search = "", bool activeOnly = false, int pageNum = 0)
+        public async Task<ActionResult> Index(bool originalCertificateOnly = false, string search = "", bool activeOnly = true, int page = 0)
         {
-            ViewData["PageNum"] = pageNum;
-            ViewData["ItemsCount"] = enrolleeDb.Enrolles.Count();
-            ViewData["PageSize"] = pageSize;
+            ViewData["page"] = page;
+            ViewData["items_count"] = enrolleeDb.Enrolles.Count();
+            ViewData["size"] = pageSize;
+
+            ViewData["originalCertificateOnly"] = originalCertificateOnly;
+            ViewData["search"] = search;
+            ViewData["activeOnly"] = activeOnly;
 
             var all = enrolleeDb.Enrolles
                 .Include(x => x.FirstPriority)
@@ -33,9 +37,7 @@ namespace SSU.Reception.Controllers
             var filtred = from x in all
                           where x.Surname.Contains(search) ||
                                 x.Name.Contains(search) ||
-                                x.Patronymic.Contains(search) ||
-                                x.ExamYear.ToString().Contains(search) ||
-                                x.PersonalPhone.Contains(search)
+                                x.Patronymic.Contains(search)
                           select x;
 
             if (activeOnly)
@@ -43,8 +45,13 @@ namespace SSU.Reception.Controllers
                 filtred = filtred.Where(x => x.ActivityStatus == true);
             }
 
+            if (originalCertificateOnly)
+            {
+                filtred = filtred.Where(x => x.OriginalCertificate == originalCertificateOnly);
+            }
+
             return View(await filtred
-                .Skip(pageSize * pageNum)
+                .Skip(pageSize * page)
                 .Take(pageSize)
                 .ToListAsync());
         }

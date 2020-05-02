@@ -4,27 +4,34 @@
     ViewBag.Title = "Список абитуриентов";
 }
 
-<div class="panel panel-info">
-    <div class="panel-heading">
-        Список абитуриентов на @DateTime.Now
-    </div>
-    <div class="panel-body">
-        <form method="get">
-            <div class="form-inline" style="justify-content: space-between; display: flex">
-                <input id="contact-filter" style="display: inline-flex" class="form-control" type="text" placeholder="Поиск..">
-                <div class="form-group">
-                    <input class="form-check-input" type="checkbox" id="checkbox-filter" value="option1">
-                    <label class="form-check-label" for="checkbox-filter">Не показывать неактивных абитуриентов</label>
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            Общий список абитуриентов на @DateTime.Now
+        </div>
+
+        <div class="panel-body">
+            @using (Html.BeginForm("Index", "Enrollees", FormMethod.Get, new { @class = "form-inline", @style = "justify-content: space-between; display: flex" }))
+            {
+                <!-- Строка поиска -->
+                @Html.Editor("search", (string)ViewData["search"], new { htmlAttributes = new { @class = "form-control", @style = "display: inline-flex", @placeholder = "Поиск по ФИО.." } })
+
+                <!-- Чекбокс "Только активные абитуриенты" -->
+                <div>
+                    @Html.CheckBox("activeOnly", (bool)ViewData["activeOnly"], new { @class = "form-check-input", @id = "checkbox-activity" })
+                    <label class="form-check-label" for="checkbox-activity">Только активные абитуриенты</label>
                 </div>
-                <div class="form-group">
-                    <input class="form-check-input" type="checkbox" id="checkbox-filter-certificate" value="option1">
-                    <label class="form-check-label" for="checkbox-filter">Оригинал аттестата</label>
+
+                <!-- Чекбокс "Только оригинал аттестата" -->
+                <div>
+                    @Html.CheckBox("originalCertificateOnly", (bool)ViewData["originalCertificateOnly"], new { @class = "form-check-input", @id = "checkbox-certificate" })
+                    <label class="form-check-label" for="checkbox-certificate">Только оригинал аттестата</label>
                 </div>
+
+                <!-- Кнопка "применить" -->
                 <input type="submit" value="Применить" class="btn btn-success" />
-            </div>
-        </form>
+            }
+        </div>
     </div>
-</div>
 
 <div class="table-responsive">
     <table class="table table-striped table-bordered">
@@ -228,9 +235,9 @@
 
 
 <div style="justify-content: center; width: 100%; margin:15px 15px 2px 4px;">
-    @SSU.Reception.Helpers.HtmlHelperExtension.PagingPrev(Html, (int)ViewData["PageNum"])
+    @SSU.Reception.Helpers.HtmlHelperExtension.PagingPrev(Html, (int)ViewData["page"])
     @Html.ActionLink("Создать нового абитуриента", "Create", null, new { @class = "btn btn-success" })
-    @SSU.Reception.Helpers.HtmlHelperExtension.PagingNext(Html, (int)ViewData["PageNum"], (int)ViewData["ItemsCount"], (int)ViewData["PageSize"])
+    @SSU.Reception.Helpers.HtmlHelperExtension.PagingNext(Html, (int)ViewData["page"], (int)ViewData["items_count"], (int)ViewData["size"])
 </div>
 
 
