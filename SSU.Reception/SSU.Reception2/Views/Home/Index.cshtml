@@ -13,6 +13,8 @@
     <div class="panel-body">
         @using (Html.BeginForm("Index", "Home", new { page = ViewData["page"] }, FormMethod.Get, new { @class = "form-inline", @style = "justify-content: space-between; display: flex" }))
         {
+            @Html.AntiForgeryToken()
+
             <!-- Строка поиска -->
             @Html.Editor("search", (string)ViewData["search"], new { htmlAttributes = new { @class = "form-control", @style = "display: inline-flex", @placeholder = "Поиск по ФИО.." } })
 

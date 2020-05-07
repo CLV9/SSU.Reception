@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using System.Net;
 using System.Web.Mvc;
 using SSU.Reception.Models;
+using System;
+using System.Text;
 
 namespace SSU.Reception.Controllers
 {
@@ -136,15 +138,67 @@ namespace SSU.Reception.Controllers
         {
             if (ModelState.IsValid)
             {
-                enrolleeDb.Entry(enrollee).State = EntityState.Modified;
-                await enrolleeDb.SaveChangesAsync();
-                return RedirectToAction("Index");
+                using (var enrolleeContext = new EnrolleeContext())
+                {
+                    UpdateEnrolleeHistory(enrollee);
+                    enrolleeContext.Enrolles.Add(enrollee);
+                    enrolleeContext.Entry(enrollee).State = EntityState.Modified;
+                    await enrolleeContext.SaveChangesAsync();
+                    return RedirectToAction("Index");
+                }
             }
 
             ViewBag.Directions = new SelectList(directionDb.Directions, "Id", "Name");
             ViewBag.Schools = new SelectList(schoolDb.Schools, "Id", "Name");
 
             return View(enrollee);
+        }
+
+        private void UpdateEnrolleeHistory(Enrollee editedEnrollee)
+        {
+            var history = new StringBuilder();
+            var baseEnrollee = enrolleeDb.Enrolles.Single(x => x.Id == editedEnrollee.Id);
+
+            if (baseEnrollee.FirstPriorityId != editedEnrollee.FirstPriorityId)
+            {
+                var oldD = directionDb.Directions.Single(x => x.Id == baseEnrollee.FirstPriorityId);
+                var newD = directionDb.Directions.Single(x => x.Id == editedEnrollee.FirstPriorityId);
+
+                history.Append
+                    (string.Format("{0} - Смена первого приоритета: {1} - {2}{3}"
+                    , DateTime.Now.ToString("g")
+                    , oldD.Name
+                    , newD.Name
+                    , Environment.NewLine)); 
+            }
+
+            if (baseEnrollee.SecondPriorityId != editedEnrollee.SecondPriorityId)
+            {
+                var oldD = directionDb.Directions.Single(x => x.Id == baseEnrollee.SecondPriorityId);
+                var newD = directionDb.Directions.Single(x => x.Id == editedEnrollee.SecondPriorityId);
+
+                history.Append
+                    (string.Format("{0} - Смена второго приоритета: {1} - {2}{3}"
+                    , DateTime.Now.ToString("g")
+                    , oldD.Name
+                    , newD.Name
+                    , Environment.NewLine));
+            }
+
+            if (baseEnrollee.ThirdPriorityId != editedEnrollee.ThirdPriorityId)
+            {
+                var oldD = directionDb.Directions.Single(x => x.Id == baseEnrollee.ThirdPriorityId);
+                var newD = directionDb.Directions.Single(x => x.Id == editedEnrollee.ThirdPriorityId);
+
+                history.Append
+                    (string.Format("{0} - Смена третьего приоритета: {1} - {2}{3}"
+                    , DateTime.Now.ToString("g")
+                    , oldD.Name
+                    , newD.Name
+                    , Environment.NewLine));
+            }
+
+            editedEnrollee.ConversionHistory += history.ToString();
         }
 
         // GET: Enrollees/Delete/5
