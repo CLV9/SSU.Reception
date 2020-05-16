@@ -24,28 +24,7 @@ namespace SSU.Reception.Controllers
             ViewData["search"] = search;
             ViewData["activeOnly"] = activeOnly;
 
-            var all = enrolleeDb.Enrolles
-                .Include(x => x.FirstPriority)
-                .Include(x => x.SecondPriority)
-                .Include(x => x.ThirdPriority)
-                .Include(x => x.School)
-                .OrderBy(x => x.Surname);
-
-            var filtred = from x in all
-                          where x.Surname.Contains(search) ||
-                                x.Name.Contains(search) ||
-                                x.Patronymic.Contains(search)
-                          select x;
-
-            if (activeOnly)
-            {
-                filtred = filtred.Where(x => x.ActivityStatus == true);
-            }
-
-            if (originalCertificateOnly)
-            {
-                filtred = filtred.Where(x => x.OriginalCertificate == originalCertificateOnly);
-            }
+            var filtred = enrolleeDb.FilterEnrolles(originalCertificateOnly, search, activeOnly);
 
             //Создание RatingViewModel
             var ratingViewModel = new RatingViewModel
