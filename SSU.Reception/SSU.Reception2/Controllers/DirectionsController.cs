@@ -161,6 +161,7 @@ namespace SSU.Reception.Controllers
 			}
 
 			var targetDirection = directionsDict.First(x => x.Key.Id == id);
+			ViewData["DirectionName"] = targetDirection.Key.Name;
 
 			return View(targetDirection.Value);
 		}
