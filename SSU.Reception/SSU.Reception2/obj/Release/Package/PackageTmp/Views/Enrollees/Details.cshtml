@@ -1,0 +1,225 @@
+﻿@model SSU.Reception.Models.Enrollee
+
+@{
+    ViewBag.Title = "Информация об абитуриенте";
+}
+
+<h2>Информация об абитуриенте</h2>
+
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Surname)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Surname)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Patronymic)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Patronymic)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.School)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.School.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ExamYear)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ExamYear)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PersonalPhone)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PersonalPhone)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.MathScore)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MathScore)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.RussianScore)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.RussianScore)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CSScore)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CSScore)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SSScore)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SSScore)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.HasMedal)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.HasMedal)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FirstLevelOlympiad)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FirstLevelOlympiad)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.OtherOlympiads)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.OtherOlympiads)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ReceiptStatus)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.GetReceiptStatus)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TotalPoints)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TotalPoints)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.OriginalCertificate)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.OriginalCertificate)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FirstPriority)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FirstPriority.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SecondPriority)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SecondPriority.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ThirdPriority)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ThirdPriority.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FirstPriorityNumber)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FirstPriorityNumber)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SecondPriorityNumber)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SecondPriorityNumber)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ThirdPriorityNumber)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ThirdPriorityNumber)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Comment)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Comment)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EnrollmentStatus)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EnrollmentStatus)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ActivityStatus)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ActivityStatus)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ConversionHistory)
+        </dt>
+
+        <dd>
+            @Html.TextAreaFor(model => model.ConversionHistory, new { @style = "min-width: 40%; height: 200px", @readonly = "readonly" })
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Изменить", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Вернуться к списку абитуриентов", "Index")
+</p>

@@ -1,0 +1,31 @@
+﻿@model SSU.Reception.Models.School
+
+@{
+    ViewBag.Title = "Удаление школы";
+}
+
+<h2>Удаление школы</h2>
+
+<h3>Вы уверены, что хотите удалить эту школу?</h3>
+<div>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Удалить" class="btn btn-danger" /> |
+            @Html.ActionLink("Вернуться к списку школ", "Index")
+        </div>
+    }
+</div>

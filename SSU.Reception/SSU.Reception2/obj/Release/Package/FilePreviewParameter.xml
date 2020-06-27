@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<parameters>
+  <parameter name="IIS Web Application Name" description="" value="ReceptionWebApp" tags="IisApp">
+    <parameterEntry kind="ProviderPath" scope="IisApp" match="^C:\\SSU\\SSU\.Reception\\SSU\.Reception2\\obj\\Release\\Package\\PackageTmp$" />
+    <parameterEntry kind="ProviderPath" scope="setAcl" match="^C:\\SSU\\SSU\.Reception\\SSU\.Reception2\\obj\\Release\\Package\\PackageTmp$" />
+  </parameter>
+  <parameter name="DefaultConnection-Web.config Connection String" description="" value="Server=tcp:ssu-reception-dbserver.database.windows.net,1433;Initial Catalog=SSU.Reception.Database;Persist Security Info=False;User ID=Kn2020;Password=Knit2020;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;" tags="">
+    <parameterEntry kind="XmlFile" scope="C:\\SSU\\SSU\.Reception\\SSU\.Reception2\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='DefaultConnection']/@connectionString" />
+  </parameter>
+  <parameter name="DbConnection-Web.config Connection String" description="" value="Server=tcp:ssu-reception-dbserver.database.windows.net,1433;Initial Catalog=SSU.Reception.Database;Persist Security Info=False;User ID=Kn2020;Password=Knit2020;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;" tags="">
+    <parameterEntry kind="XmlFile" scope="C:\\SSU\\SSU\.Reception\\SSU\.Reception2\\obj\\Release\\Package\\PackageTmp\\Web\.config$" match="/configuration/connectionStrings/add[@name='DbConnection']/@connectionString" />
+  </parameter>
+</parameters>
