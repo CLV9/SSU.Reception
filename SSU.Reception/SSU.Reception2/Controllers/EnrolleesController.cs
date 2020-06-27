@@ -10,6 +10,7 @@ using System.Text;
 
 namespace SSU.Reception.Controllers
 {
+    [Authorize]
     public class EnrolleesController : Controller
     {
         private readonly EnrolleeContext enrolleeDb = new EnrolleeContext();

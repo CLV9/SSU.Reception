@@ -1,13 +1,12 @@
-﻿using System.Collections.Generic;
-using System.Data;
-using System.Data.Entity;
+﻿using SSU.Reception.Models;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using SSU.Reception.Models;
 
 
 namespace SSU.Reception.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
 	{
         private EnrolleeContext enrolleeDb = new EnrolleeContext();

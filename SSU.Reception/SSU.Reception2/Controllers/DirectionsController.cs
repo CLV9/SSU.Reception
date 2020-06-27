@@ -8,6 +8,7 @@ using System.Collections.Generic;
 
 namespace SSU.Reception.Controllers
 {
+    [Authorize]
 	public class DirectionsController : Controller
 	{
 		private readonly DirectionContext db = new DirectionContext();

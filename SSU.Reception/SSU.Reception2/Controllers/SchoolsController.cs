@@ -6,6 +6,7 @@ using SSU.Reception.Models;
 
 namespace SSU.Reception.Controllers
 {
+    [Authorize]
     public class SchoolsController : Controller
     {
         private readonly SchoolContext db = new SchoolContext();
