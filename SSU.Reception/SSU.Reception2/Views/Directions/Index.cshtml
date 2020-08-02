@@ -1,40 +1,46 @@
 ﻿@model IEnumerable<SSU.Reception.Models.Direction>
 
 @{
-	ViewBag.Title = "Список направлений";
+    ViewBag.Title = "Список направлений";
 }
 
 <h2>Список направлений</h2>
 <hr />
 <p>
-	@Html.ActionLink("Создать новое направление", "Create")
+    @Html.ActionLink("Создать новое направление", "Create")
 </p>
 <table class="table">
-	<tr>
-		<th>
-			@Html.DisplayNameFor(model => model.Name)
-		</th>
-		<th>
-			@Html.DisplayNameFor(model => model.BudgetPlaces)
-		</th>
-		<th></th>
-	</tr>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.BudgetPlaces)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.PrioritySubject)
+        </th>
+        <th></th>
+    </tr>
 
-	@foreach (var item in Model)
-	{
-		<tr>
-			<td>
-				@Html.DisplayFor(modelItem => item.Name)
-			</td>
-			<td>
-				@Html.DisplayFor(modelItem => item.BudgetPlaces)
-			</td>
-			<td>
-				@Html.ActionLink("Изменить", "Edit", new { id = item.Id }) |
-				@Html.ActionLink("Удалить", "Delete", new { id = item.Id }) |
-				@Html.ActionLink("Точный список", "Rating", new { id = item.Id})
-			</td>
-		</tr>
-	}
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BudgetPlaces)
+            </td>
+            <th>
+                @Html.DisplayFor(modelItem => item.PrioritySublectToString)
+            </th>
+            <td>
+                @Html.ActionLink("Изменить", "Edit", new { id = item.Id }) |
+                @Html.ActionLink("Удалить", "Delete", new { id = item.Id }) |
+                @Html.ActionLink("Точный список", "Rating", new { id = item.Id })
+            </td>
+        </tr>
+    }
 
 </table>

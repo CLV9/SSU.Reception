@@ -9,9 +9,9 @@ namespace SSU.Reception.Controllers
     [Authorize]
     public class HomeController : Controller
 	{
-        private EnrolleeContext enrolleeDb = new EnrolleeContext();
-        private DirectionContext directionDb = new DirectionContext();
-        private readonly int pageSize = 15;
+        private readonly EnrolleeContext enrolleeDb = new EnrolleeContext();
+        private readonly DirectionContext directionDb = new DirectionContext();
+        private readonly int pageSize = 5000;
 
         public ActionResult Index(bool originalCertificateOnly = false, string search = "", bool activeOnly = true, int page = 0)
         {
@@ -23,39 +23,31 @@ namespace SSU.Reception.Controllers
             ViewData["search"] = search;
             ViewData["activeOnly"] = activeOnly;
 
-            var filtred = enrolleeDb.FilterEnrolles(originalCertificateOnly, search, activeOnly);
+            var filtred = enrolleeDb.GetFilterEnrollesAndSortedBySurname(originalCertificateOnly, search, activeOnly);
 
             //Создание RatingViewModel
             var ratingViewModel = new RatingViewModel
             {
-                Enrollees = filtred.Skip(pageSize * page).Take(pageSize),
+                Enrollees = filtred
+                    .SortEnrolleesByPoints()
+                    .Skip(pageSize * page)
+                    .Take(pageSize),
                 SortedDirections = new Dictionary<Direction, IList<Enrollee>>()
             };
 
             foreach (var direction in directionDb.Directions)
             {
                 var enrolles = enrolleeDb.Enrolles
-                    .Where(x => x.FirstPriority.Name == direction.Name 
+                    .Where(x => x.FirstPriority.Name == direction.Name
                              || x.SecondPriority.Name == direction.Name
-                             || x.ThirdPriority.Name == direction.Name)
-                    .OrderByDescending(TotalEnrolleePoints)
-                    .OrderByDescending(x => (int)x.ReceiptStatus)
-                    .ToList();
+                             || x.ThirdPriority.Name == direction.Name);
 
-                ratingViewModel.SortedDirections.Add(direction, enrolles);
+                var sortedEnrollees = direction.SortEnrolleesByPoints(enrolles).ToList();
+
+                ratingViewModel.SortedDirections.Add(direction, sortedEnrollees);
             }
 
             return View(ratingViewModel);
         }
-
-        private int TotalEnrolleePoints(Enrollee enrollee)
-        {
-            var score = enrollee.MathScore + enrollee.RussianScore;
-
-            if (enrollee.CSScore != null)
-                score += enrollee.CSScore.Value;
-
-            return score;
-        }
-	}
+    }
 }

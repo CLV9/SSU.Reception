@@ -19,14 +19,9 @@ namespace SSU.Reception.Models
         /// <param name="search">Поиск по ФИО</param>
         /// <param name="activeOnly">Только активные абитуриенты</param>
         /// <returns></returns>
-		public IQueryable<Enrollee> FilterEnrolles(bool originalCertificateOnly, string search, bool activeOnly)
+		public IQueryable<Enrollee> GetFilterEnrollesAndSortedBySurname(bool originalCertificateOnly, string search, bool activeOnly)
 		{
-            var all = Enrolles
-               .Include(x => x.FirstPriority)
-               .Include(x => x.SecondPriority)
-               .Include(x => x.ThirdPriority)
-               .Include(x => x.School)
-               .OrderBy(x => x.Surname);
+            var all = GetEnrolleesSortedBySurname();
 
             var filtred = from x in all
                           where x.Surname.Contains(search) ||
@@ -46,5 +41,43 @@ namespace SSU.Reception.Models
 
             return filtred;
         }
+
+        public IOrderedQueryable<Enrollee> GetEnrolleesSortedBySurname()
+        {
+            return GetEnrolleesWithIncludes().OrderBy(x => x.Surname);
+        }
+
+        public IQueryable<Enrollee> GetEnrolleesWithIncludes()
+        {
+            var all = Enrolles
+               .Include(x => x.FirstPriority)
+               .Include(x => x.SecondPriority)
+               .Include(x => x.ThirdPriority)
+               .Include(x => x.School);
+            return all;
+        }
 	}
+
+    public static class EnrolleeExtinsions
+    {
+        public static IOrderedEnumerable<Enrollee> SortEnrolleesByPoints(this IQueryable<Enrollee> enrollees)
+        {
+            return enrollees.OrderByDescending(GetEnrolleeExtraPoints)
+                            .OrderByDescending(x => x.CSScore)
+                            .OrderByDescending(x => x.MathScore)
+                            .OrderByDescending(GetEnrolleeTotalPoints)
+                            .OrderByDescending(x => (int)x.ReceiptStatus);
+        }
+
+        private static int GetEnrolleeExtraPoints(Enrollee x)
+        {
+            return x.ExtraPoints;
+        }
+
+        private static int GetEnrolleeTotalPoints(Enrollee x)
+        {
+            return x.TotalPoints;
+        }
+    }
+
 }

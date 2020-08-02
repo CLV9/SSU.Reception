@@ -250,3 +250,5 @@ C:\SSU\SSU.Reception\SSU.Reception2\obj\Debug\SSU.Reception.csprojAssemblyRefere
 C:\SSU\SSU.Reception\SSU.Reception2\obj\Debug\SSU.Reception.csproj.CopyComplete
 C:\SSU\SSU.Reception\SSU.Reception2\obj\Debug\SSU.Reception.dll
 C:\SSU\SSU.Reception\SSU.Reception2\obj\Debug\SSU.Reception.pdb
+C:\SSU\SSU.Reception\SSU.Reception2\obj\Debug\SSU.Reception.Migrations.InitialCreate.resources
+C:\SSU\SSU.Reception\SSU.Reception2\obj\Debug\SSU.Reception.csproj.GenerateResource.cache

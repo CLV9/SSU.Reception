@@ -1,5 +1,4 @@
-﻿using System.Data;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
@@ -17,10 +16,10 @@ namespace SSU.Reception.Controllers
         private readonly DirectionContext directionDb = new DirectionContext();
         private readonly SchoolContext schoolDb = new SchoolContext();
 
-        private readonly int pageSize = 15;
+        private readonly int pageSize = 5000;
 
         // GET: Enrollees
-        public async Task<ActionResult> Index(bool originalCertificateOnly = false, string search = "", bool activeOnly = true, int page = 0)
+        public ActionResult Index(bool originalCertificateOnly = false, string search = "", bool activeOnly = true, int page = 0)
         {
             ViewData["page"] = page;
             ViewData["items_count"] = enrolleeDb.Enrolles.Count();
@@ -30,33 +29,12 @@ namespace SSU.Reception.Controllers
             ViewData["search"] = search;
             ViewData["activeOnly"] = activeOnly;
 
-            var all = enrolleeDb.Enrolles
-                .Include(x => x.FirstPriority)
-                .Include(x => x.SecondPriority)
-                .Include(x => x.ThirdPriority)
-                .Include(x => x.School)
-                .OrderBy(x => x.Surname);
+            var filtred = enrolleeDb.GetFilterEnrollesAndSortedBySurname(originalCertificateOnly, search, activeOnly);
 
-            var filtred = from x in all
-                          where x.Surname.Contains(search) ||
-                                x.Name.Contains(search) ||
-                                x.Patronymic.Contains(search)
-                          select x;
-
-            if (activeOnly)
-            {
-                filtred = filtred.Where(x => x.ActivityStatus == true);
-            }
-
-            if (originalCertificateOnly)
-            {
-                filtred = filtred.Where(x => x.OriginalCertificate == originalCertificateOnly);
-            }
-
-            return View(await filtred
+            return View(filtred
                 .Skip(pageSize * page)
                 .Take(pageSize)
-                .ToListAsync());
+                .ToList());
         }
 
         // GET: Enrollees/Details/5
@@ -67,13 +45,9 @@ namespace SSU.Reception.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var enrollee = enrolleeDb.Enrolles
-                .Include(x => x.FirstPriority)
-                .Include(x => x.SecondPriority)
-                .Include(x => x.ThirdPriority)
-                .Include(x => x.School)
-                .Where(x => x.Id == id.Value)
-                .FirstOrDefault();
+            var enrollee = enrolleeDb
+                .GetEnrolleesWithIncludes()
+                .FirstOrDefault(x => x.Id == id.Value);
 
             if (enrollee == null)
             {
@@ -158,45 +132,93 @@ namespace SSU.Reception.Controllers
         private void UpdateEnrolleeHistory(Enrollee editedEnrollee)
         {
             var history = new StringBuilder();
-            var baseEnrollee = enrolleeDb.Enrolles.Single(x => x.Id == editedEnrollee.Id);
+            var baseEnrollee = enrolleeDb.Enrolles.First(x => x.Id == editedEnrollee.Id);
 
             if (baseEnrollee.FirstPriorityId != editedEnrollee.FirstPriorityId)
             {
-                var oldD = directionDb.Directions.Single(x => x.Id == baseEnrollee.FirstPriorityId);
-                var newD = directionDb.Directions.Single(x => x.Id == editedEnrollee.FirstPriorityId);
+                var oldD = directionDb.Directions.First(x => x.Id == baseEnrollee.FirstPriorityId);
+                var newD = directionDb.Directions.First(x => x.Id == editedEnrollee.FirstPriorityId);
 
                 history.Append
                     (string.Format("{0} - Смена первого приоритета: {1} - {2}{3}"
                     , DateTime.Now.ToString("g")
                     , oldD.Name
                     , newD.Name
-                    , Environment.NewLine)); 
+                    , Environment.NewLine));
             }
 
             if (baseEnrollee.SecondPriorityId != editedEnrollee.SecondPriorityId)
             {
-                var oldD = directionDb.Directions.Single(x => x.Id == baseEnrollee.SecondPriorityId);
-                var newD = directionDb.Directions.Single(x => x.Id == editedEnrollee.SecondPriorityId);
+                var newDirection = directionDb.Directions.FirstOrDefault(x => x.Id == editedEnrollee.SecondPriorityId);
 
-                history.Append
-                    (string.Format("{0} - Смена второго приоритета: {1} - {2}{3}"
-                    , DateTime.Now.ToString("g")
-                    , oldD.Name
-                    , newD.Name
-                    , Environment.NewLine));
+                if (baseEnrollee.SecondPriorityId == null)
+                {
+                    history.Append
+                        (string.Format("{0} - Смена второго приоритета: {1}{2}"
+                        , DateTime.Now.ToString("g")
+                        , newDirection.Name
+                        , Environment.NewLine));
+                }
+                else
+                {
+                    var oldDirection = directionDb.Directions.FirstOrDefault(x => x.Id == baseEnrollee.SecondPriorityId);
+
+                    if (newDirection == null)
+                    {
+                        history.Append
+                            (string.Format("{0} - убран второй приоритет: {1}"
+                            , DateTime.Now.ToString("g")
+                            , oldDirection.Name
+                            , Environment.NewLine));
+                    }
+                    else
+                    {
+
+                        history.Append
+                            (string.Format("{0} - Смена второго приоритета: {1} - {2}{3}"
+                            , DateTime.Now.ToString("g")
+                            , oldDirection.Name
+                            , newDirection.Name
+                            , Environment.NewLine));
+                    }
+                }
             }
 
             if (baseEnrollee.ThirdPriorityId != editedEnrollee.ThirdPriorityId)
             {
-                var oldD = directionDb.Directions.Single(x => x.Id == baseEnrollee.ThirdPriorityId);
-                var newD = directionDb.Directions.Single(x => x.Id == editedEnrollee.ThirdPriorityId);
+                var newDirection = directionDb.Directions.FirstOrDefault(x => x.Id == editedEnrollee.ThirdPriorityId);
 
-                history.Append
-                    (string.Format("{0} - Смена третьего приоритета: {1} - {2}{3}"
-                    , DateTime.Now.ToString("g")
-                    , oldD.Name
-                    , newD.Name
-                    , Environment.NewLine));
+                if (baseEnrollee.ThirdPriorityId == null)
+                {
+                    history.Append
+                        (string.Format("{0} - Смена второго приоритета: {1}{2}"
+                        , DateTime.Now.ToString("g")
+                        , newDirection.Name
+                        , Environment.NewLine));
+                }
+                else
+                {
+                    var oldDirection = directionDb.Directions.FirstOrDefault(x => x.Id == baseEnrollee.ThirdPriorityId);
+
+                    if (newDirection == null)
+                    {
+                        history.Append
+                            (string.Format("{0} - убран второй приоритет: {1}"
+                            , DateTime.Now.ToString("g")
+                            , oldDirection.Name
+                            , Environment.NewLine));
+                    }
+                    else
+                    {
+
+                        history.Append
+                            (string.Format("{0} - Смена второго приоритета: {1} - {2}{3}"
+                            , DateTime.Now.ToString("g")
+                            , oldDirection.Name
+                            , newDirection.Name
+                            , Environment.NewLine));
+                    }
+                }
             }
 
             editedEnrollee.ConversionHistory += history.ToString();

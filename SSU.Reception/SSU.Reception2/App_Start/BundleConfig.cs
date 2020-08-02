@@ -21,7 +21,7 @@ namespace SSU.Reception
 			bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
 					  "~/Scripts/bootstrap.js"));
 
-			bundles.Add(new StyleBundle("~/Style/CssBundle").Include(
+			bundles.Add(new StyleBundle("~/Style/CssBundle/css").Include(
 					  "~/Style/bootstrap.css",
 					  "~/Style/Site.css"));
 		}

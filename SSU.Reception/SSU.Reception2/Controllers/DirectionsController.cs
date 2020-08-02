@@ -11,13 +11,13 @@ namespace SSU.Reception.Controllers
     [Authorize]
 	public class DirectionsController : Controller
 	{
-		private readonly DirectionContext db = new DirectionContext();
+		private readonly DirectionContext directionsDb = new DirectionContext();
 		private readonly EnrolleeContext enrolleeDb = new EnrolleeContext();
 
 		// GET: Directions
 		public async Task<ActionResult> Index()
 		{
-			return View(await db.Directions.ToListAsync());
+			return View(await directionsDb.Directions.ToListAsync());
 		}
 
 		// GET: Directions/Create
@@ -31,12 +31,12 @@ namespace SSU.Reception.Controllers
 		// сведения см. в статье https://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<ActionResult> Create([Bind(Include = "Name,BudgetPlaces")] Direction direction)
+		public async Task<ActionResult> Create([Bind(Include = "Name, BudgetPlaces, PrioritySubject")] Direction direction)
 		{
 			if (ModelState.IsValid)
 			{
-				db.Directions.Add(direction);
-				await db.SaveChangesAsync();
+				directionsDb.Directions.Add(direction);
+				await directionsDb.SaveChangesAsync();
 				return RedirectToAction("Index");
 			}
 
@@ -50,7 +50,7 @@ namespace SSU.Reception.Controllers
 			{
 				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 			}
-			Direction direction = await db.Directions.FindAsync(id);
+			Direction direction = await directionsDb.Directions.FindAsync(id);
 			if (direction == null)
 			{
 				return HttpNotFound();
@@ -63,12 +63,12 @@ namespace SSU.Reception.Controllers
 		// сведения см. в статье https://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<ActionResult> Edit([Bind(Include = "Id,Name,BudgetPlaces")] Direction direction)
+		public async Task<ActionResult> Edit([Bind(Include = "Id, Name, BudgetPlaces, PrioritySubject")] Direction direction)
 		{
 			if (ModelState.IsValid)
 			{
-				db.Entry(direction).State = EntityState.Modified;
-				await db.SaveChangesAsync();
+				directionsDb.Entry(direction).State = EntityState.Modified;
+				await directionsDb.SaveChangesAsync();
 				return RedirectToAction("Index");
 			}
 			return View(direction);
@@ -81,7 +81,7 @@ namespace SSU.Reception.Controllers
 			{
 				return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 			}
-			Direction direction = await db.Directions.FindAsync(id);
+			Direction direction = await directionsDb.Directions.FindAsync(id);
 			if (direction == null)
 			{
 				return HttpNotFound();
@@ -94,35 +94,37 @@ namespace SSU.Reception.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<ActionResult> DeleteConfirmed(int? id)
 		{
-			Direction direction = await db.Directions.FindAsync(id);
-			db.Directions.Remove(direction);
-			await db.SaveChangesAsync();
+			Direction direction = await directionsDb.Directions.FindAsync(id);
+			directionsDb.Directions.Remove(direction);
+			await directionsDb.SaveChangesAsync();
 			return RedirectToAction("Index");
 		}
 
 		public ActionResult Rating(int? id, bool originalCertificateOnly = false, bool activeOnly = true)
 		{
-			if (db.Directions.FirstOrDefault(x => x.Id == id) == null)
+			if (directionsDb.Directions.FirstOrDefault(x => x.Id == id) == null)
 				return HttpNotFound();
 
 			ViewData["originalCertificateOnly"] = originalCertificateOnly;
 			ViewData["activeOnly"] = activeOnly;
 
 			// Фильтрация абитуриентов по запросу
-			var filtred = enrolleeDb.FilterEnrolles(originalCertificateOnly, "", activeOnly)
-									.OrderByDescending(TotalEnrolleePoints)
-									.OrderByDescending(x => (int)x.ReceiptStatus);
-							 
+			var filtred = enrolleeDb.GetFilterEnrollesAndSortedBySurname(originalCertificateOnly, "", activeOnly)
+									.SortEnrolleesByPoints();
+
 
 			// Создаём список направлений и абитуриентов, которые проходят на эти направления
 			var directionsDict = new Dictionary<Direction, List<Enrollee>>();
-			foreach (var dir in db.Directions)
+			foreach (var dir in directionsDb.Directions)
 			{
 				directionsDict.Add(dir, new List<Enrollee>());
 			}
 
+			// Распределение абитуриентов
 			foreach (var enrollee in filtred)
 			{
+				bool isPlaced = false;
+
 				// Проверяем, помещается ли абитуриент в список по первому приоритету
 				var firstPriorityId = enrollee.FirstPriority.Id;
 				var firstPriorityDir = directionsDict.FirstOrDefault(x => x.Key.Id == firstPriorityId);
@@ -131,6 +133,7 @@ namespace SSU.Reception.Controllers
 				var currentFirstPriorityDirCount = firstPriorityDir.Value.Count;
 				if (currentFirstPriorityDirCount < firstPriorityDir.Key.BudgetPlaces)
 				{
+					isPlaced = true;
 					firstPriorityDir.Value.Add(enrollee);
 				}
 				// Если абитуриент не помещается по первому приоритету, то пробуем раскидать его во второй
@@ -140,9 +143,10 @@ namespace SSU.Reception.Controllers
 					var secondPriorityDir = directionsDict.FirstOrDefault(x => x.Key.Id == secondPriorityId);
 
 					// Количество абитуриентов в текущем списке по второму приоритету
-					var currentSecondPriorityDirCount = firstPriorityDir.Value.Count;
+					var currentSecondPriorityDirCount = secondPriorityDir.Value.Count;
 					if (currentSecondPriorityDirCount < secondPriorityDir.Key.BudgetPlaces)
 					{
+						isPlaced = true;
 						secondPriorityDir.Value.Add(enrollee);
 					}
 					// Если абитуриент не помещается по второму приоритету, то пробуем закинуть его по третьему
@@ -155,9 +159,16 @@ namespace SSU.Reception.Controllers
 						var currentThirdPriorityDirCount = thirdPriorityDir.Value.Count;
 						if (currentThirdPriorityDirCount < thirdPriorityDir.Key.BudgetPlaces)
 						{
+							isPlaced = true;
 							thirdPriorityDir.Value.Add(enrollee);
 						}
 					}
+				}
+
+				// Если абитуриент не попал ни в 1 список, то закидываем его по первому приоритету
+				if (isPlaced == false)
+				{
+					firstPriorityDir.Value.Add(enrollee);
 				}
 			}
 
@@ -167,21 +178,11 @@ namespace SSU.Reception.Controllers
 			return View(targetDirection.Value);
 		}
 
-		private int TotalEnrolleePoints(Enrollee enrollee)
-		{
-			var score = enrollee.MathScore + enrollee.RussianScore;
-
-			if (enrollee.CSScore != null)
-				score += enrollee.CSScore.Value;
-
-			return score;
-		}
-
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
 			{
-				db.Dispose();
+				directionsDb.Dispose();
 			}
 			base.Dispose(disposing);
 		}

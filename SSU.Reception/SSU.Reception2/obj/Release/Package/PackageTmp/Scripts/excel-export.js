@@ -8,11 +8,9 @@
 
 
     var exportTable = $('#' + id).clone();
-    exportTable.find("#change_column").remove();
-    exportTable.find("#info_column").remove();
-    exportTable.find("#delete_column").remove();
-    exportTable.find('input').each(function (index, elem) { $(elem).remove(); });
-    exportTable.find('a').each(function (index, elem) { $(elem).remove(); });
+    exportTable.find('input').each(function (_index, elem) { $(elem).remove(); });
+    exportTable.find('a').each(function (_index, elem) { $(elem).remove(); });
+    exportTable.find('.contact-table__actions').each(function (_index, elem) { $(elem).remove(); });
 
     tab_text = tab_text + exportTable.html();
     tab_text = tab_text + '</table></body></html>';

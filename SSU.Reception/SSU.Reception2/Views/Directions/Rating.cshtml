@@ -31,7 +31,11 @@
             <input type="submit" value="Применить" class="btn btn-success" />
         }
     </div>
+</div>
 
+<!-- Экспорт в эксель -->
+<div style="justify-content: center; width: 100%; margin:15px 15px 2px 4px;">
+    <button class="btn btn-primary" onclick="javascript: fnExcelReport('dataTable', '@ViewData["DirectionName"] @DateTime.Now.ToString("G")')">Экспорт</button>
 </div>
 
 <div class="table-responsive">
@@ -39,26 +43,25 @@
         <thead>
             <tr>
                 <th id="index" rowspan="2">#</th>
-                <th id="first_status" rowspan="2">Статус в приказе после 29 июля и 1 августа</th>
+                <th id="first_status" rowspan="2">Ст. в прик.</th>
                 <th id="FIO" rowspan="2">ФИО</th>
-                <th id="second_status" rowspan="2">Статус поступления</th>
-                <th id="original_direction" rowspan="2">Направление, на котором лежит оригинал</th>
-                <th id="first_priority" rowspan="2">1-й приоритет</th>
-                <th id="second_priority" rowspan="2">2-й приоритет</th>
-                <th id="third_priority" rowspan="2">3-й приоритет</th>
-                <th id="point_sum" rowspan="2">Общая сумма баллов</th>
-                <th colspan="3">Баллы ЕГЭ</th>
-                <th id="medal_point" rowspan="2">Баллы за медаль</th>
+                <th id="point_sum" rowspan="2">Сум. балл</th>
+                <th colspan="4">Баллы ЕГЭ</th>
+                <th id="second_status" rowspan="2">Ст. поступ.</th>
+                <th id="original_direction" rowspan="2">Напр. где ориг.</th>
+                <th id="first_priority" rowspan="2">1-й пр.</th>
+                <th id="second_priority" rowspan="2">2-й пр.</th>
+                <th id="third_priority" rowspan="2">3-й пр.</th>
+                <th id="medal_point" rowspan="2">Медаль</th>
                 <th id="dop_point" rowspan="2">Доп. баллы</th>
-                <th id="original_status" rowspan="2">Статус оригинала</th>
-                <th id="change_column" rowspan="2">Изменить</th>
-                <th id="info_column" rowspan="2">Инфо</th>
-                <th id="delete_column" rowspan="2">Удалить</th>
+                <th id="original_status" rowspan="2">Ст. ориг.</th>
+                <th id="change_column" rowspan="2" class="contact-table__actions"></th>
             </tr>
             <tr>
-                <th>И</th>
                 <th>М</th>
+                <th>И</th>
                 <th>Р</th>
+                <th>О</th>
             </tr>
         </thead>
         @{
@@ -73,7 +76,7 @@
                 }
                 <!-- Статус в приказе после 29 июля и 1 августа -->
                 <td>
-                    @Html.DisplayFor(modelItem => item.EnrollmentStatus)
+                    @Html.BoolToString(item.EnrollmentStatus)
                 </td>
                 <!-- ФИО -->
                 <td>
@@ -81,13 +84,35 @@
                     @Html.DisplayFor(modelItem => item.Name)
                     @Html.DisplayFor(modelItem => item.Patronymic)
                 </td>
+                <!-- Общая сумма баллов -->
+                <td>
+                    @Html.DisplayFor(modelItem => item.TotalPoints)
+                </td>
+                <!-- Баллы ЕГЭ -->
+                <td>
+                    @Html.DisplayFor(modelItem => item.MathScore)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CSScore)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.RussianScore)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SSScore)
+                </td>
                 <!-- Статус поступления -->
                 <td>
-                    @Html.DisplayFor(modelItem => item.GetReceiptStatus)
+                    @Html.DisplayFor(modelItem => item.ReceiptStatusToString)
                 </td>
                 <!-- Направление, на котором лежит оригинал -->
                 <td>
-                    @Html.DisplayFor(modelItem => item.FirstPriority.Name)
+                    @{
+                        if (item.OriginalCertificate == true)
+                        {
+                            @Html.DisplayFor(modelItem => item.FirstPriority.Name)
+                        };
+                    }
                 </td>
                 <!-- 1-й приоритет -->
                 <td>
@@ -101,23 +126,9 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.ThirdPriority.Name)
                 </td>
-                <!-- Общая сумма баллов -->
-                <td>
-                    @Html.DisplayFor(modelItem => item.TotalPoints)
-                </td>
-                <!-- Баллы ЕГЭ -->
-                <td>
-                    @Html.DisplayFor(modelItem => item.CSScore)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.MathScore)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.RussianScore)
-                </td>
                 <!-- Баллы за медаль -->
                 <td>
-                    @Html.DisplayFor(modelItem => item.HasMedal)
+                    @Html.BoolToString(item.HasMedal)
                 </td>
                 <!-- Доп. баллы -->
                 <td>
@@ -125,32 +136,23 @@
                 </td>
                 <!-- Статус оригинала -->
                 <td>
-                    @Html.DisplayFor(modelItem => item.OriginalCertificate)
+                    @Html.BoolToString(item.OriginalCertificate)
                 </td>
 
                 <!-- Статус зачисления в другом вузе -->
                 @*<td></td>*@
 
                 <!-- Изменить -->
-                <td>
+                <td class="contact-table__actions">
                     @Html.ActionLink("Изменить", "Edit", "Enrollees", new { id = item.Id }, null)
-                </td>
-                <!-- Инфо -->
-                <td>
+                    <!-- Инфо -->
                     @Html.ActionLink("Инфо", "Details", "Enrollees", new { id = item.Id }, null)
-                </td>
-                <!-- Удалить -->
-                <td>
+                    <!-- Удалить -->
                     @Html.ActionLink("Удалить", "Delete", "Enrollees", new { id = item.Id }, null)
                 </td>
             </tr>
         }
     </table>
-</div>
-
-<!-- Экспорт в эксель -->
-<div style="justify-content: center; width: 100%; margin:15px 15px 2px 4px;">
-    <button class="btn btn-primary" onclick="javascript: fnExcelReport('dataTable', '@ViewData["DirectionName"] @DateTime.Now.ToString("G")')">Экспорт</button>
 </div>
 
 <script src="~/Scripts/FileSaver.js"></script>
