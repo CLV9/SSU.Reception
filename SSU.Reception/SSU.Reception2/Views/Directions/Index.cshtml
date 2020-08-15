@@ -18,7 +18,19 @@
             @Html.DisplayNameFor(model => model.BudgetPlaces)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.PrioritySubject)
+            @Html.DisplayNameFor(model => model.PrivilegedPlaces)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.TargetPlaces)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.WithoutExamsPlaces)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FirstWavePlaces)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.SecondWavePlaces)
         </th>
         <th></th>
     </tr>
@@ -33,7 +45,19 @@
                 @Html.DisplayFor(modelItem => item.BudgetPlaces)
             </td>
             <th>
-                @Html.DisplayFor(modelItem => item.PrioritySublectToString)
+                @Html.DisplayFor(modelItem => item.PrivilegedPlaces)
+            </th>
+            <th>
+                @Html.DisplayFor(modelItem => item.TargetPlaces)
+            </th>
+            <th>
+                @Html.DisplayFor(modelItem => item.WithoutExamsPlaces)
+            </th>
+            <th>
+                @Html.DisplayFor(modelItem => item.FirstWavePlaces)
+            </th>
+            <th>
+                @Html.DisplayFor(modelItem => item.SecondWavePlaces)
             </th>
             <td>
                 @Html.ActionLink("Изменить", "Edit", new { id = item.Id }) |

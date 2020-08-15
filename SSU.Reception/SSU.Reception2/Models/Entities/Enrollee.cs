@@ -166,17 +166,19 @@ namespace SSU.Reception.Models
                 return "Не определено";
             }
         }
-
     }
 
     public enum ReceiptStatus
     {
         [Display(Name = "БВИ")]
         NoEntranceExams = 4,
+
         [Display(Name = "Льгота")]
         Privilege = 3,
+
         [Display(Name = "Целевое")]
         Target = 2,
+
         [Display(Name = "ОК")]
         GeneralCompetition = 1
     }

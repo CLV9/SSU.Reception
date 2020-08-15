@@ -1,78 +1,31 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace SSU.Reception.Models
 {
     public class Direction
     {
-        [ScaffoldColumn(false)]
-        [Key]
+        [Key, ScaffoldColumn(false)]
         public int Id { get; set; }
 
-        [Display(Name = "Название направления")]
-        [Required]
+        [Required, Display(Name = "Название направления")]
         public string Name { get; set; }
 
-        [Display(Name = "Количество бюджетных мест")]
-        [Range(0, 99999)]
+        [Display(Name = "Количество бюджетных мест"), Range(0, 99999)]
         public int BudgetPlaces { get; set; }
 
-        [Display(Name = "Приоритетный предмет")]
-        [DefaultValue(PrioritySubject.ComputerScience)]
-        public PrioritySubject PrioritySubject { get; set; }
+        [Display(Name = "Количество льготных мест"), Range(0, 99999)]
+        public int PrivilegedPlaces { get; set; }
 
-        public IOrderedEnumerable<Enrollee> SortEnrolleesByPoints(IQueryable<Enrollee> enrollees)
-        {
-            var sorted = enrollees.OrderByDescending(GetEnrolleeExtraPoints);
+        [Display(Name = "Количество целевых мест"), Range(0, 99999)]
+        public int TargetPlaces { get; set; }
 
-            switch (PrioritySubject)
-            {
-                case PrioritySubject.ComputerScience:
-                    sorted = sorted.OrderByDescending(x => x.CSScore);
-                    break;
-                case PrioritySubject.SocialStudies:
-                    sorted = sorted.OrderByDescending(x => x.SSScore);
-                    break;
-                default:
-                    break;
-            }
+        [Display(Name = "Количество мест БВИ"), Range(0, 99999)]
+        public int WithoutExamsPlaces { get; set; }
 
-            return sorted.OrderByDescending(x => x.MathScore)
-                         .OrderByDescending(GetEnrolleeTotalPoints)
-                         .OrderByDescending(x => (int)x.ReceiptStatus);
-        }
+        [Display(Name = "Количество мест первой волны"), Range(0, 99999)]
+        public int FirstWavePlaces { get; set; }
 
-        private static int GetEnrolleeExtraPoints(Enrollee x)
-        {
-            return x.ExtraPoints;
-        }
-
-        private static int GetEnrolleeTotalPoints(Enrollee x)
-        {
-            return x.TotalPoints;
-        }
-
-        public string PrioritySublectToString
-        {
-            get
-            {
-                switch (PrioritySubject)
-                {
-                    case PrioritySubject.ComputerScience:
-                        return "Информатика";
-                    case PrioritySubject.SocialStudies:
-                        return "Обществознание";
-                    default:
-                        return "Не определено";
-                }
-            }
-        }
-    }
-
-    public enum PrioritySubject
-    {
-        [Display(Name = "Информатика")] ComputerScience = 0,
-        [Display(Name = "Обществознание")] SocialStudies = 1
+        [Display(Name = "Количество мест второй волны"), Range(0, 99999)]
+        public int SecondWavePlaces { get; set; }
     }
 }

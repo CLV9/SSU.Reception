@@ -42,7 +42,7 @@ namespace SSU.Reception.Controllers
                              || x.SecondPriority.Name == direction.Name
                              || x.ThirdPriority.Name == direction.Name);
 
-                var sortedEnrollees = direction.SortEnrolleesByPoints(enrolles).ToList();
+                var sortedEnrollees = enrolles.SortEnrolleesByPoints().ToList();
 
                 ratingViewModel.SortedDirections.Add(direction, sortedEnrollees);
             }

@@ -181,6 +181,10 @@
     <Compile Include="Migrations\202004121256320_InitialCreate.Designer.cs">
       <DependentUpon>202004121256320_InitialCreate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202008151828524_DirectionPlaces.cs" />
+    <Compile Include="Migrations\202008151828524_DirectionPlaces.Designer.cs">
+      <DependentUpon>202008151828524_DirectionPlaces.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Context\DirectionContext.cs" />
@@ -473,6 +477,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202004121256320_InitialCreate.resx">
       <DependentUpon>202004121256320_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202008151828524_DirectionPlaces.resx">
+      <DependentUpon>202008151828524_DirectionPlaces.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

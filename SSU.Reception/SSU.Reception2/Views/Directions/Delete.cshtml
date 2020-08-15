@@ -11,7 +11,6 @@
         <dt>
             @Html.DisplayNameFor(model => model.Name)
         </dt>
-
         <dd>
             @Html.DisplayFor(model => model.Name)
         </dd>
@@ -19,16 +18,13 @@
         <dt>
             @Html.DisplayNameFor(model => model.BudgetPlaces)
         </dt>
-
         <dd>
             @Html.DisplayFor(model => model.BudgetPlaces)
         </dd>
-
     </dl>
 
     @using (Html.BeginForm()) {
         @Html.AntiForgeryToken()
-
         <div class="form-actions no-color">
             <input type="submit" value="Удалить" class="btn btn-default" /> |
             @Html.ActionLink("Вернуться к списку направлений", "Index")

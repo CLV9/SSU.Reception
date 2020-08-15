@@ -27,11 +27,8 @@ namespace SSU.Reception.Controllers
 		}
 
 		// POST: Directions/Create
-		// Чтобы защититься от атак чрезмерной передачи данных, включите определенные свойства, для которых следует установить привязку. Дополнительные 
-		// сведения см. в статье https://go.microsoft.com/fwlink/?LinkId=317598.
-		[HttpPost]
-		[ValidateAntiForgeryToken]
-		public async Task<ActionResult> Create([Bind(Include = "Name, BudgetPlaces, PrioritySubject")] Direction direction)
+		[HttpPost, ValidateAntiForgeryToken]
+		public async Task<ActionResult> Create(Direction direction)
 		{
 			if (ModelState.IsValid)
 			{
@@ -59,11 +56,9 @@ namespace SSU.Reception.Controllers
 		}
 
 		// POST: Directions/Edit/5
-		// Чтобы защититься от атак чрезмерной передачи данных, включите определенные свойства, для которых следует установить привязку. Дополнительные 
-		// сведения см. в статье https://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<ActionResult> Edit([Bind(Include = "Id, Name, BudgetPlaces, PrioritySubject")] Direction direction)
+		public async Task<ActionResult> Edit(Direction direction)
 		{
 			if (ModelState.IsValid)
 			{
@@ -90,8 +85,7 @@ namespace SSU.Reception.Controllers
 		}
 
 		// POST: Directions/Delete/5
-		[HttpPost, ActionName("Delete")]
-		[ValidateAntiForgeryToken]
+		[HttpPost, ActionName("Delete"), ValidateAntiForgeryToken]
 		public async Task<ActionResult> DeleteConfirmed(int? id)
 		{
 			Direction direction = await directionsDb.Directions.FindAsync(id);
